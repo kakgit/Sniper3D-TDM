@@ -131,7 +131,7 @@ how it was written to be deployed.
 
 Open `https://<your-service>.up.railway.app/v1/health` in a browser. You want:
 
-    {"ok": true, "storage": "postgres", "version": 2}
+    {"ok": true, "version": 1, "storage": "postgres"}
 
 `"storage": "postgres"` is the line that matters. If it says `sqlite`, the
 `DATABASE_URL` variable is not reaching the service and accounts would be living
