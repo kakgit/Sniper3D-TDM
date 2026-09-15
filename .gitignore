@@ -15,3 +15,7 @@ server/auth.db-wal
 
 # Python bytecode from running the API locally
 __pycache__/
+
+# Local accounts API secrets: the database URL with its password.
+# Copy server/.env.local.example to server/.env.local and fill it in there.
+server/.env.local

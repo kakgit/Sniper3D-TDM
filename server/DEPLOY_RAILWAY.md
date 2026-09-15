@@ -25,15 +25,33 @@ nothing is left behind:
     python server/smoke_test.py
 
 Use `python`, not `python3`, on Windows. With no `DATABASE_URL` it exercises the
-SQLite path, which needs no installation at all, and you want the run to end in
-`21 passed, 0 failed`.
+SQLite path, which needs no installation at all, and a good run ends in
+`24 passed, 0 failed`.
 
-To exercise the Postgres path before you deploy anything, install the driver and
-point the test at your database:
+### Then the same test against your local Postgres
+
+That is the run that matters, because it executes the Postgres code on this
+machine instead of finding out about it on the host. Postgres 18 is installed and
+the driver is already in place, so it is one command:
+
+    python server/setup_local_db.py
+
+It prompts for your `postgres` superuser password, creates the role `tdm` and the
+database `tdm_accounts`, and writes `server/.env.local` holding the connection
+string. The prompt uses getpass, so the password is not echoed and does not reach
+your shell history, and `.gitignore` line 21 keeps that file out of git. If the
+driver is ever missing on a fresh machine:
 
     pip install -r server/requirements.txt
-    set DATABASE_URL=postgresql://user:pass@host:5432/dbname
+
+Then run the test again:
+
     python server/smoke_test.py
+
+   A good run starts with `backend: postgres (DATABASE_URL)` and ends in
+   `23 passed, 0 failed` with one `SKIP`. The skip is the raw-file password check,
+   which needs database credentials the test deliberately does not hold; the
+   hashing it covers is shared with the SQLite path, which does check it.
 
 In this mode the test registers a randomly named account each run, so repeated
 runs do not collide - and those accounts stay in the database. Each run also
@@ -59,11 +77,16 @@ credentials the test deliberately does not have.
 
 ## Deploy steps
 
-### 1. Put the project in a Git repo
+### 1. Put the project on GitHub
 
-Railway deploys from a repository. This project is not one yet - say the word and
-I will initialize it and commit what is there. `server/auth.db` is already
-ignored, so a local database never gets committed.
+Railway deploys from a repository, so the flow is: commit locally, push to
+GitHub, and Railway redeploys by itself whenever that branch moves. This project
+is already a Git repo with the current work committed, so what is left is
+creating the empty GitHub repo and pushing to it. Everything after this step is
+one-time setup; after that, pushing is the whole deploy.
+
+`server/auth.db`, `server/.env.local` and `/build/` are ignored, so a local
+database, a local password and the APK never get pushed.
 
 ### 2. Create the service
 
@@ -142,10 +165,16 @@ rather than assume. Rooms and bots are milestone 4 in
 
 ## Honest limits
 
-- I have not run this container and I cannot run it from here: no terminal, no
-  Docker. The image is written but unbuilt, and the Postgres path is new code
-  that has not executed anywhere yet. Step 2 will either build it or show an
-  error, and a build error is cheap to read and fix.
+- The container is written but unbuilt, and I have no Docker here to build it
+  with. Step 2 either builds it or shows an error, and a build error is cheap to
+  read and fix.
+- The Postgres path is what the local run above exists to cover. Until that run
+  has actually happened against a real database it is unproven code, so treat the
+  first Postgres result as the moment it becomes trustworthy rather than assuming
+  it from the SQLite pass.
+- The image is Python 3.12 and installs psycopg from `server/requirements.txt`.
+  Locally that resolved to psycopg 3.3.5 on Python 3.14, so the exact patch
+  version in the image may differ. Same major version and same API.
 - Railway is a paid service billed by usage, and a Postgres service adds to that.
   I am not quoting a price because the plans change; check their current pricing
   before you commit. This API is tiny - a few megabytes of idle memory and a fast

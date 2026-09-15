@@ -7,9 +7,10 @@ login, wrong password, token check, logout.
     python3 server/smoke_test.py
 
 With no DATABASE_URL that is a throwaway SQLite file, so the run repeats freely
-and leaves nothing behind. With DATABASE_URL set, the same checks run against
-that Postgres instead, using a fresh username each run. The account it creates
-there stays in the database.
+and leaves nothing behind. With DATABASE_URL set - in the environment, or in
+server/.env.local (gitignored, see server/.env.local.example) - the same checks
+run against that Postgres instead, using a fresh username each run. The account
+it creates there stays in the database.
 
 Exits 0 when every check passes, 1 otherwise.
 """
@@ -30,6 +31,32 @@ PORT = 8799
 BASE = "http://127.0.0.1:%d" % PORT
 
 PASS = "correct-horse-battery"
+
+
+def load_env_file():
+    """Take DATABASE_URL from server/.env.local when the environment lacks it.
+
+    That file is gitignored, so a local connection string keeps its password on
+    this machine instead of in shell history or a chat message.
+    """
+    if os.environ.get("DATABASE_URL"):
+        return
+    path = os.path.join(HERE, ".env.local")
+    if not os.path.isfile(path):
+        return
+    with open(path, "r", encoding="utf-8") as handle:
+        for line in handle:
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, _, value = line.partition("=")
+            if key.strip() == "DATABASE_URL" and value.strip():
+                os.environ["DATABASE_URL"] = value.strip().strip('"').strip("'")
+                return
+
+
+load_env_file()
+
 # A real Postgres keeps its accounts between runs, so every run registers a name
 # of its own. The SQLite database is a fresh temp file, so it can stay fixed.
 POSTGRES = bool(os.environ.get("DATABASE_URL"))
