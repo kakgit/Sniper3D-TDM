@@ -1,0 +1,275 @@
+[gd_scene format=3 uid="uid://bqyil0m07hhk4"]
+
+[ext_resource type="Script" uid="uid://bmbqdn8e5n3vi" path="res://scripts/player_controller.gd" id="1_pc"]
+[ext_resource type="Script" uid="uid://bveksrfqewt32" path="res://scripts/sniper_rifle.gd" id="2_sr"]
+[ext_resource type="Script" uid="uid://22nn5to747cp" path="res://scripts/hud.gd" id="3_hud"]
+[ext_resource type="PackedScene" uid="uid://bum8vhmfdt16o" path="res://assets/library/shooter-military/m40a3-sniper-rifle.glb" id="4_kek77"]
+[ext_resource type="PackedScene" path="res://target.tscn" id="4_tgt"]
+[ext_resource type="Script" uid="uid://c5ka81eoidiy8" path="res://scripts/map_builder.gd" id="5_mb"]
+[ext_resource type="Script" uid="uid://dj6y8j557lxnr" path="res://scripts/match_manager.gd" id="6_mm"]
+[ext_resource type="Script" uid="uid://bdja0mo8yvjx3" path="res://scripts/ambience.gd" id="7_amb"]
+[ext_resource type="Script" uid="uid://bqc74lq8mncge" path="res://scripts/squad_ai.gd" id="8_sq"]
+[ext_resource type="Script" uid="uid://bx1df42t3sjoe" path="res://scripts/net_session.gd" id="9_net"]
+[ext_resource type="PackedScene" path="res://mp_menu.tscn" id="10_menu"]
+[ext_resource type="PackedScene" uid="uid://dfo6b28v4vh63" path="res://touch_controls.tscn" id="11_touch"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
+sky_top_color = Color(0.44, 0.6, 0.86, 1)
+sky_horizon_color = Color(0.86, 0.8, 0.66, 1)
+ground_bottom_color = Color(0.7, 0.62, 0.45, 1)
+ground_horizon_color = Color(0.86, 0.8, 0.66, 1)
+sun_angle_max = 12.0
+
+[sub_resource type="Sky" id="Sky_env"]
+sky_material = SubResource("ProceduralSkyMaterial_sky")
+
+[sub_resource type="Environment" id="Environment_desert"]
+background_mode = 2
+sky = SubResource("Sky_env")
+ambient_light_source = 3
+ambient_light_color = Color(0.72, 0.68, 0.6, 1)
+ambient_light_energy = 0.55
+tonemap_mode = 2
+fog_enabled = true
+fog_light_color = Color(0.85, 0.78, 0.62, 1)
+fog_density = 0.0035
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
+radius = 0.4
+height = 1.78
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_flash"]
+albedo_color = Color(1, 0.86, 0.42, 1)
+emission_enabled = true
+emission = Color(1, 0.8, 0.35, 1)
+emission_energy_multiplier = 2.5
+
+[sub_resource type="SphereMesh" id="SphereMesh_flash"]
+radius = 0.05
+height = 0.1
+
+[node name="World" type="Node3D" unique_id=1836434095]
+
+[node name="MapBuilder" type="Node3D" parent="." unique_id=1352653300]
+script = ExtResource("5_mb")
+
+[node name="Sun" type="DirectionalLight3D" parent="." unique_id=504198237]
+transform = Transform3D(1, 0, 0, 0, 0.64279, -0.76604, 0, 0.76604, 0.64279, 0, 30, 0)
+light_energy = 1.25
+shadow_enabled = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=184269815]
+environment = SubResource("Environment_desert")
+
+[node name="Player" type="CharacterBody3D" parent="." unique_id=417835700]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -40, 0.2, -50)
+collision_mask = 26
+script = ExtResource("1_pc")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player" unique_id=1616700073]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.89, 0)
+shape = SubResource("CapsuleShape3D_body")
+
+[node name="Head" type="Node3D" parent="Player" unique_id=1468521841]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.62, 0)
+
+[node name="Camera3D" type="Camera3D" parent="Player/Head" unique_id=778908101]
+current = true
+fov = 78.0
+
+[node name="WeaponHolder" type="Node3D" parent="Player/Head/Camera3D" unique_id=1868460768]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.25, -0.35, -0.65)
+script = ExtResource("2_sr")
+
+[node name="Muzzle" type="Node3D" parent="Player/Head/Camera3D/WeaponHolder" unique_id=1060520225]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.014, 0.092, -0.804)
+
+[node name="MuzzleFlash" type="MeshInstance3D" parent="Player/Head/Camera3D/WeaponHolder/Muzzle" unique_id=1317651955]
+visible = false
+material_override = SubResource("StandardMaterial3D_flash")
+mesh = SubResource("SphereMesh_flash")
+
+[node name="Rifle" parent="Player/Head/Camera3D/WeaponHolder" unique_id=1841535160 instance=ExtResource("4_kek77")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0, 0, 0)
+
+[node name="Targets" type="Node3D" parent="." unique_id=1679809254]
+
+[node name="TargetA1" parent="Targets" unique_id=1529191925 instance=ExtResource("4_tgt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 0, -18)
+team = 0
+patrol_points = PackedVector3Array(-20, 0, -22.5, -24.5, 0, -20, -30, 0, -16, -24, 0, -12, -16, 0, -14)
+
+[node name="TargetA2" parent="Targets" unique_id=636030237 instance=ExtResource("4_tgt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 0, -22)
+team = 0
+patrol_points = PackedVector3Array(-14, 0, -20, -6, 0, -22, -8, 0, -16, -16, 0, -16)
+
+[node name="TargetA3" parent="Targets" unique_id=876648772 instance=ExtResource("4_tgt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26, 0, -22.8)
+team = 0
+patrol_points = PackedVector3Array(-26, 0, -22.5, -33, 0, -22, -40, 0, -28, -48, 0, -22, -44, 0, -18, -34, 0, -18)
+
+[node name="TargetA4" parent="Targets" unique_id=762279755 instance=ExtResource("4_tgt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21, 6, -32)
+team = 0
+
+[node name="TargetA5" parent="Targets" unique_id=1109926985 instance=ExtResource("4_tgt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25, 9, -32)
+team = 0
+
+[node name="TargetB1" parent="Targets" unique_id=284338266 instance=ExtResource("4_tgt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 0, 18)
+patrol_points = PackedVector3Array(20, 0, 22.5, 24.5, 0, 20, 30, 0, 16, 24, 0, 12, 16, 0, 14)
+
+[node name="TargetB2" parent="Targets" unique_id=785940578 instance=ExtResource("4_tgt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 0, 22)
+patrol_points = PackedVector3Array(14, 0, 20, 6, 0, 22, 8, 0, 16, 16, 0, 16)
+
+[node name="TargetB3" parent="Targets" unique_id=180455625 instance=ExtResource("4_tgt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 0, 16)
+patrol_points = PackedVector3Array(-20, 0, 22.5, -24.5, 0, 20, -30, 0, 16, -24, 0, 12, -16, 0, 14)
+
+[node name="TargetB4" parent="Targets" unique_id=254122536 instance=ExtResource("4_tgt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22, 3, 30)
+
+[node name="TargetB5" parent="Targets" unique_id=1687278513 instance=ExtResource("4_tgt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21, 9, 32)
+
+[node name="Players" type="Node3D" parent="." unique_id=1066931147]
+
+[node name="NetSession" type="Node" parent="." unique_id=524831031]
+script = ExtResource("9_net")
+
+[node name="Effects" type="Node3D" parent="." unique_id=1813854295]
+
+[node name="Squad" type="Node" parent="." unique_id=905741223]
+script = ExtResource("8_sq")
+
+[node name="MatchManager" type="Node" parent="." unique_id=360528039]
+script = ExtResource("6_mm")
+
+[node name="Ambience" type="AudioStreamPlayer" parent="." unique_id=1889235417]
+volume_db = -20.0
+autoplay = true
+script = ExtResource("7_amb")
+
+[node name="HUD" type="CanvasLayer" parent="." unique_id=1421821479]
+
+[node name="Crosshair" type="Control" parent="HUD" unique_id=1915259470]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("3_hud")
+
+[node name="AmmoMag" type="Label" parent="HUD/Crosshair" unique_id=2124812854]
+layout_mode = 0
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -130.0
+offset_top = -96.0
+offset_right = -60.0
+offset_bottom = -46.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_font_sizes/font_size = 38
+text = "5"
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="AmmoReserve" type="Label" parent="HUD/Crosshair" unique_id=1746693188]
+layout_mode = 0
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -58.0
+offset_top = -78.0
+offset_right = -16.0
+offset_bottom = -50.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_font_sizes/font_size = 18
+text = "/ 25"
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Status" type="Label" parent="HUD/Crosshair" unique_id=74347479]
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -120.0
+offset_top = -132.0
+offset_right = 120.0
+offset_bottom = -100.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_font_sizes/font_size = 22
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="Hints" type="Label" parent="HUD/Crosshair" unique_id=2110647061]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 12.0
+offset_right = 720.0
+offset_bottom = 152.0
+theme_override_font_sizes/font_size = 15
+text = "WASD move   SHIFT sprint   CTRL crouch   SPACE jump
+RMB scope (hold SHIFT to steady)   LMB fire   R reload
+T switch team (respawns you on the other side)   ESC free mouse
+M or ESC opens the LAN host/join menu   ENTER restart match
+To play over a LAN with a second machine, open that menu and press HOST or JOIN."
+
+[node name="Clock" type="Label" parent="HUD/Crosshair" unique_id=659890914]
+layout_mode = 0
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -110.0
+offset_top = 14.0
+offset_right = 110.0
+offset_bottom = 44.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 22
+text = "60:00"
+horizontal_alignment = 1
+
+[node name="Scoreboard" type="Label" parent="HUD/Crosshair" unique_id=2008971422]
+layout_mode = 0
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -230.0
+offset_top = 46.0
+offset_right = 230.0
+offset_bottom = 74.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 20
+text = "ALPHA  0        BRAVO  0"
+horizontal_alignment = 1
+
+[node name="Banner" type="Label" parent="HUD/Crosshair" unique_id=1384325482]
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -340.0
+offset_top = -70.0
+offset_right = 340.0
+offset_bottom = 50.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 30
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Menu" parent="." unique_id=264428030 instance=ExtResource("10_menu")]
+
+[node name="TouchControls" parent="." unique_id=909802667 instance=ExtResource("11_touch")]

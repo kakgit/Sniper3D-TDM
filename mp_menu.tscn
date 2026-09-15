@@ -1,0 +1,111 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/mp_menu.gd" id="1_menu"]
+
+[node name="Menu" type="CanvasLayer"]
+layer = 10
+script = ExtResource("1_menu")
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="MenuButton" type="Button" parent="Root"]
+visible = false
+layout_mode = 0
+offset_left = 16.0
+offset_top = 166.0
+offset_right = 156.0
+offset_bottom = 206.0
+text = "MULTIPLAYER"
+
+[node name="NetStatus" type="Label" parent="Root"]
+visible = false
+layout_mode = 0
+offset_left = 164.0
+offset_top = 174.0
+offset_right = 764.0
+offset_bottom = 198.0
+theme_override_font_sizes/font_size = 15
+text = "OFFLINE - playing solo"
+
+[node name="MenuPanel" type="Panel" parent="Root"]
+visible = false
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -220.0
+offset_right = 300.0
+offset_bottom = 220.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Margin" type="MarginContainer" parent="Root/MenuPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 20
+
+[node name="Column" type="VBoxContainer" parent="Root/MenuPanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Root/MenuPanel/Margin/Column"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+text = "LAN MULTIPLAYER"
+horizontal_alignment = 1
+
+[node name="StatusLine" type="Label" parent="Root/MenuPanel/Margin/Column"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 46)
+theme_override_font_sizes/font_size = 16
+text = "OFFLINE - playing solo"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Hint" type="Label" parent="Root/MenuPanel/Margin/Column"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "Port 8910. On one machine: press HOST GAME here, then JOIN from a second copy of the game. On a LAN, host on one machine and type its address on the other."
+autowrap_mode = 2
+
+[node name="AddressField" type="LineEdit" parent="Root/MenuPanel/Margin/Column"]
+layout_mode = 2
+text = "127.0.0.1"
+placeholder_text = "host address"
+
+[node name="HostButton" type="Button" parent="Root/MenuPanel/Margin/Column"]
+layout_mode = 2
+focus_mode = 0
+text = "HOST GAME"
+
+[node name="JoinButton" type="Button" parent="Root/MenuPanel/Margin/Column"]
+layout_mode = 2
+focus_mode = 0
+text = "JOIN BY IP"
+
+[node name="LeaveButton" type="Button" parent="Root/MenuPanel/Margin/Column"]
+visible = false
+layout_mode = 2
+focus_mode = 0
+text = "LEAVE SESSION (PLAY SOLO)"
+
+[node name="CloseButton" type="Button" parent="Root/MenuPanel/Margin/Column"]
+layout_mode = 2
+focus_mode = 0
+text = "BACK TO GAME"

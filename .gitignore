@@ -1,0 +1,17 @@
+# Godot 4+ specific ignores
+.godot/
+/android/
+
+# Summer Engine local-only state
+.summer/local/
+
+# Accounts API: the local user database is state, not source
+server/auth.db
+server/auth.db-journal
+server/auth.db-wal
+
+# Build output: build_apk.sh regenerates the APK, so it is not tracked
+/build/
+
+# Python bytecode from running the API locally
+__pycache__/

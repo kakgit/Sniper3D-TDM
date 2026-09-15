@@ -1,0 +1,261 @@
+[gd_scene format=3 uid="uid://dfo6b28v4vh63"]
+
+[ext_resource type="Script" uid="uid://87575po7soq2" path="res://scripts/touch_controls.gd" id="1_touch"]
+
+[sub_resource type="StyleBoxFlat" id="SB_pad"]
+bg_color = Color(0.88, 0.91, 0.96, 0.12)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.9, 0.94, 1, 0.3)
+corner_radius_top_left = 110
+corner_radius_top_right = 110
+corner_radius_bottom_right = 110
+corner_radius_bottom_left = 110
+
+[sub_resource type="StyleBoxFlat" id="SB_knob"]
+bg_color = Color(0.95, 0.97, 1, 0.28)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(1, 1, 1, 0.45)
+corner_radius_top_left = 48
+corner_radius_top_right = 48
+corner_radius_bottom_right = 48
+corner_radius_bottom_left = 48
+
+[sub_resource type="StyleBoxFlat" id="SB_btn"]
+bg_color = Color(0.08, 0.1, 0.13, 0.38)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 1, 1, 0.26)
+corner_radius_top_left = 100
+corner_radius_top_right = 100
+corner_radius_bottom_right = 100
+corner_radius_bottom_left = 100
+
+[sub_resource type="StyleBoxFlat" id="SB_btn_down"]
+bg_color = Color(0.93, 0.76, 0.3, 0.5)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(1, 0.95, 0.72, 0.75)
+corner_radius_top_left = 100
+corner_radius_top_right = 100
+corner_radius_bottom_right = 100
+corner_radius_bottom_left = 100
+
+[node name="TouchControls" type="CanvasLayer" unique_id=564099275]
+layer = 5
+script = ExtResource("1_touch")
+
+[node name="Shield" type="Control" parent="." unique_id=455822727]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="MovePad" type="Control" parent="Shield" unique_id=1932534746]
+anchors_preset = 0
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 36.0
+offset_top = -316.0
+offset_right = 256.0
+offset_bottom = -96.0
+grow_vertical = 0
+mouse_filter = 2
+
+[node name="Base" type="Panel" parent="Shield/MovePad" unique_id=414114691]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_pad")
+
+[node name="Knob" type="Panel" parent="Shield/MovePad" unique_id=1414461318]
+layout_mode = 0
+offset_left = 62.0
+offset_top = 62.0
+offset_right = 158.0
+offset_bottom = 158.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_knob")
+
+[node name="LookArea" type="Control" parent="Shield" unique_id=1190500249]
+anchors_preset = 0
+anchor_left = 0.5
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="JumpButton" type="Button" parent="Shield" unique_id=1526195826]
+layout_mode = 0
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -498.0
+offset_top = -368.0
+offset_right = -402.0
+offset_bottom = -272.0
+grow_horizontal = 0
+grow_vertical = 0
+focus_mode = 0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.93, 0.95, 0.98, 0.88)
+theme_override_colors/font_pressed_color = Color(0.1, 0.1, 0.12, 0.95)
+theme_override_font_sizes/font_size = 15
+theme_override_styles/normal = SubResource("SB_btn")
+theme_override_styles/pressed = SubResource("SB_btn_down")
+theme_override_styles/hover = SubResource("SB_btn")
+theme_override_styles/focus = SubResource("SB_btn")
+text = "JUMP"
+
+[node name="CrouchButton" type="Button" parent="Shield" unique_id=116237646]
+layout_mode = 0
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -498.0
+offset_top = -228.0
+offset_right = -402.0
+offset_bottom = -132.0
+grow_horizontal = 0
+grow_vertical = 0
+focus_mode = 0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.93, 0.95, 0.98, 0.88)
+theme_override_colors/font_pressed_color = Color(0.1, 0.1, 0.12, 0.95)
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("SB_btn")
+theme_override_styles/pressed = SubResource("SB_btn_down")
+theme_override_styles/hover = SubResource("SB_btn")
+theme_override_styles/focus = SubResource("SB_btn")
+text = "CROUCH"
+
+[node name="SprintButton" type="Button" parent="Shield" unique_id=1526411089]
+layout_mode = 0
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -378.0
+offset_top = -298.0
+offset_right = -282.0
+offset_bottom = -202.0
+grow_horizontal = 0
+grow_vertical = 0
+focus_mode = 0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.93, 0.95, 0.98, 0.88)
+theme_override_colors/font_pressed_color = Color(0.1, 0.1, 0.12, 0.95)
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("SB_btn")
+theme_override_styles/pressed = SubResource("SB_btn_down")
+theme_override_styles/hover = SubResource("SB_btn")
+theme_override_styles/focus = SubResource("SB_btn")
+text = "SPRINT"
+
+[node name="ReloadButton" type="Button" parent="Shield" unique_id=148754407]
+layout_mode = 0
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -378.0
+offset_top = -168.0
+offset_right = -282.0
+offset_bottom = -72.0
+grow_horizontal = 0
+grow_vertical = 0
+focus_mode = 0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.93, 0.95, 0.98, 0.88)
+theme_override_colors/font_pressed_color = Color(0.1, 0.1, 0.12, 0.95)
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("SB_btn")
+theme_override_styles/pressed = SubResource("SB_btn_down")
+theme_override_styles/hover = SubResource("SB_btn")
+theme_override_styles/focus = SubResource("SB_btn")
+text = "RELOAD"
+
+[node name="AimButton" type="Button" parent="Shield" unique_id=580410354]
+layout_mode = 0
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -262.0
+offset_top = -242.0
+offset_right = -158.0
+offset_bottom = -138.0
+grow_horizontal = 0
+grow_vertical = 0
+focus_mode = 0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.93, 0.95, 0.98, 0.88)
+theme_override_colors/font_pressed_color = Color(0.1, 0.1, 0.12, 0.95)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("SB_btn")
+theme_override_styles/pressed = SubResource("SB_btn_down")
+theme_override_styles/hover = SubResource("SB_btn")
+theme_override_styles/focus = SubResource("SB_btn")
+text = "AIM"
+
+[node name="FireButton" type="Button" parent="Shield" unique_id=508229786]
+layout_mode = 0
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -158.0
+offset_top = -332.0
+offset_right = -26.0
+offset_bottom = -200.0
+grow_horizontal = 0
+grow_vertical = 0
+focus_mode = 0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.93, 0.95, 0.98, 0.9)
+theme_override_colors/font_pressed_color = Color(0.1, 0.1, 0.12, 0.95)
+theme_override_font_sizes/font_size = 22
+theme_override_styles/normal = SubResource("SB_btn")
+theme_override_styles/pressed = SubResource("SB_btn_down")
+theme_override_styles/hover = SubResource("SB_btn")
+theme_override_styles/focus = SubResource("SB_btn")
+text = "FIRE"
+
+[node name="MenuButton" type="Button" parent="Shield" unique_id=905792669]
+layout_mode = 0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -110.0
+offset_top = 300.0
+offset_right = -26.0
+offset_bottom = 384.0
+grow_horizontal = 0
+focus_mode = 0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.93, 0.95, 0.98, 0.88)
+theme_override_colors/font_pressed_color = Color(0.1, 0.1, 0.12, 0.95)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("SB_btn")
+theme_override_styles/pressed = SubResource("SB_btn_down")
+theme_override_styles/hover = SubResource("SB_btn")
+theme_override_styles/focus = SubResource("SB_btn")
+text = "MENU"

@@ -1,0 +1,88 @@
+[gd_scene format=3 uid="uid://bkb1eviiq582l"]
+
+[ext_resource type="Script" uid="uid://bmbqdn8e5n3vi" path="res://scripts/player_controller.gd" id="1_pc"]
+[ext_resource type="Script" uid="uid://bveksrfqewt32" path="res://scripts/sniper_rifle.gd" id="2_sr"]
+[ext_resource type="PackedScene" uid="uid://bum8vhmfdt16o" path="res://assets/library/shooter-military/m40a3-sniper-rifle.glb" id="3_rifle"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
+radius = 0.4
+height = 1.78
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gear"]
+albedo_color = Color(0.24, 0.26, 0.2, 1)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_torso"]
+radius = 0.34
+height = 1.4
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_skin"]
+albedo_color = Color(0.62, 0.51, 0.4, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_head"]
+radius = 0.14
+height = 0.28
+
+[sub_resource type="BoxMesh" id="BoxMesh_rifle"]
+size = Vector3(0.09, 0.13, 1.15)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_flash"]
+albedo_color = Color(1, 0.86, 0.42, 1)
+emission_enabled = true
+emission = Color(1, 0.8, 0.35, 1)
+emission_energy_multiplier = 2.5
+
+[sub_resource type="SphereMesh" id="SphereMesh_flash"]
+radius = 0.05
+height = 0.1
+
+[node name="Player" type="CharacterBody3D" unique_id=34633771]
+collision_mask = 26
+script = ExtResource("1_pc")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=710218821]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.89, 0)
+shape = SubResource("CapsuleShape3D_body")
+
+[node name="WorldModel" type="Node3D" parent="." unique_id=810029986]
+visible = false
+
+[node name="Torso" type="MeshInstance3D" parent="WorldModel" unique_id=538834137]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.88, 0)
+material_override = SubResource("StandardMaterial3D_gear")
+mesh = SubResource("CapsuleMesh_torso")
+
+[node name="Shoulders" type="MeshInstance3D" parent="WorldModel" unique_id=439172978]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.38, 0)
+material_override = SubResource("StandardMaterial3D_skin")
+mesh = SubResource("SphereMesh_head")
+
+[node name="WorldRifle" type="MeshInstance3D" parent="WorldModel" unique_id=1585536511]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.19, 1.24, -0.44)
+material_override = SubResource("StandardMaterial3D_gear")
+mesh = SubResource("BoxMesh_rifle")
+
+[node name="Head" type="Node3D" parent="." unique_id=824182646]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.62, 0)
+
+[node name="HeadMesh" type="MeshInstance3D" parent="Head" unique_id=515130142]
+visible = false
+material_override = SubResource("StandardMaterial3D_skin")
+mesh = SubResource("SphereMesh_head")
+
+[node name="Camera3D" type="Camera3D" parent="Head" unique_id=721466680]
+fov = 78.0
+
+[node name="WeaponHolder" type="Node3D" parent="Head/Camera3D" unique_id=612629981]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.25, -0.35, -0.65)
+script = ExtResource("2_sr")
+
+[node name="Muzzle" type="Node3D" parent="Head/Camera3D/WeaponHolder" unique_id=424615234]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.014, 0.092, -0.804)
+
+[node name="MuzzleFlash" type="MeshInstance3D" parent="Head/Camera3D/WeaponHolder/Muzzle" unique_id=760297674]
+visible = false
+material_override = SubResource("StandardMaterial3D_flash")
+mesh = SubResource("SphereMesh_flash")
+
+[node name="Rifle" parent="Head/Camera3D/WeaponHolder" unique_id=1938248235 instance=ExtResource("3_rifle")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0, 0, 0)

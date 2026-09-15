@@ -1,0 +1,7 @@
+# The build context is this folder, so keep it to the service file.
+auth.db
+auth.db-journal
+auth.db-wal
+*.db
+*.pyc
+__pycache__/

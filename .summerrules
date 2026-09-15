@@ -1,0 +1,18 @@
+# Project rules
+
+- Language: GDScript (Godot 4.x). Scenes are .tscn in snake_case, scripts .gd.
+- Genre: tactical team-deathmatch sniper shooter (Delta Force: Black Hawk Down inspired).
+- Main scene: res://main.tscn. The arena geometry is generated at runtime by res://scripts/map_builder.gd.
+- Arena layout is point-mirrored: Team A spawns at z = -50, Team B at z = +50, buildings diagonally opposite.
+- The mid barricade at z = 0 is fully solid and impassable at every height. Never add gaps, loopholes, or climbable cover to it.
+- Each team's half is reachable only by spawning in it. Do not add traversal between the two halves.
+- Buildings are 3 storeys with ground doors, window tiers, interior ramps, and roof access.
+- Enemy players are represented by practice targets (res://target.tscn) until real networking exists.
+- Pinned curated library collection: shooter-military (never mix library assets across collections).
+- Mouse capture must always be releasable: ESC sets MOUSE_MODE_VISIBLE.
+- Match state (team scores, one-hour clock, kill feed, ENTER restart) lives in res://scripts/match_manager.gd, in the "match" group.
+- Player health, death and the 20 s respawn live in player_controller.gd; enemy return fire lives in target_dummy.gd. The HUD reads both through the "player" and "match" groups.
+- Scoped aim: while the scope is up, look sensitivity is scaled by the FOV zoom ratio (scope_fov/hip_fov) times the ads_sens_mult export, and walk speed is capped by the scope_move_speed export. Keep both: unscaled sensitivity made the slightest drag miss the target.
+- Android gotcha: display/window/size/viewport_width, viewport_height and display/window/handheld/orientation in project.godot must stay plain integers. Float text such as 1280.0 makes GodotActivity log "Unable to parse viewport dimensions" (NumberFormatException: "1280.0") and misread the viewport on the phone.
+- Room model: a room is 20 places, 10 per side (ROOM_SLOTS / TEAM_SIZE in network_manager.gd). The server owns the roster: assign_slot puts a joiner on the emptier side, release_slot frees a leaver's place, try_change_team grants a side switch only when the other side has room. The roster is published to every peer and is what picks each peer's team and spawn slot in net_session.gd, so the server is the only authority on who is where.
+- Input gotcha: an AI file write that reloads ProjectSettings/InputMap from project.godot drops Godot's built-in ui_* actions, which breaks the ESC cursor release and menu keyboard navigation. Re-bind ui_cancel, ui_accept, ui_select, ui_up, ui_down, ui_left, ui_right after any project.godot rewrite.
