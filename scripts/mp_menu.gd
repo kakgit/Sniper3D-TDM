@@ -17,6 +17,8 @@ var _host_button: Button
 var _join_button: Button
 var _leave_button: Button
 var _close_button: Button
+var _account_button: Button
+var _auth_screen: Node
 var _lan: Node
 
 
@@ -30,6 +32,7 @@ func _ready() -> void:
 	_join_button = find_child("JoinButton", true, false) as Button
 	_leave_button = find_child("LeaveButton", true, false) as Button
 	_close_button = find_child("CloseButton", true, false) as Button
+	_account_button = find_child("AccountButton", true, false) as Button
 	if _host_button:
 		_host_button.pressed.connect(_on_host_pressed)
 	if _join_button:
@@ -38,6 +41,13 @@ func _ready() -> void:
 		_leave_button.pressed.connect(_on_leave_pressed)
 	if _close_button:
 		_close_button.pressed.connect(_on_close_pressed)
+	if _account_button:
+		_account_button.pressed.connect(_on_account_pressed)
+	# The account panel is a child of this scene, so it is found rather than
+	# looked up by an absolute path that would break if the tree moved.
+	_auth_screen = find_child("Auth", true, false)
+	if _auth_screen != null and _auth_screen.has_signal("closed"):
+		_auth_screen.closed.connect(_refresh)
 	_lan = get_node_or_null("/root/NetworkManager")
 	if _lan != null:
 		if _lan.has_signal("state_changed"):
@@ -60,8 +70,11 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _process(_delta: float) -> void:
 	var cursor_free := Input.mouse_mode != Input.MOUSE_MODE_CAPTURED
+	var show_buttons := cursor_free and not _panel_is_open() and not _auth_is_open()
 	if _menu_button:
-		_menu_button.visible = cursor_free and not _panel_is_open()
+		_menu_button.visible = show_buttons
+	if _account_button:
+		_account_button.visible = show_buttons
 	_refresh()
 
 
@@ -107,6 +120,8 @@ func _refresh() -> void:
 		_net_status.visible = online
 	if _leave_button:
 		_leave_button.visible = online
+	if _account_button:
+		_account_button.text = _account_button_text()
 
 
 ## The room tally the server publishes, plus the side this player is on.
@@ -168,3 +183,26 @@ func _on_leave_pressed() -> void:
 func _on_close_pressed() -> void:
 	_set_panel_open(false)
 	_refresh()
+
+
+## Opens the account panel. The multiplayer panel closes first, so only one
+## blocking panel is ever on screen and the cursor is free for typing.
+func _on_account_pressed() -> void:
+	if _auth_screen == null:
+		return
+	_set_panel_open(false)
+	_auth_screen.open()
+	_refresh()
+
+
+func _auth_is_open() -> bool:
+	return _auth_screen != null and _auth_screen.visible
+
+
+## The button doubles as a signed-in indicator, so the player can see which
+## account the game will use without opening the panel.
+func _account_button_text() -> String:
+	var auth := get_node_or_null("/root/AuthClient")
+	if auth != null and bool(auth.is_signed_in()):
+		return "ACCOUNT: %s" % String(auth.username()).to_upper()
+	return "ACCOUNT: SIGN IN"

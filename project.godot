@@ -18,6 +18,7 @@ run/main_scene="res://main.tscn"
 [autoload]
 
 NetworkManager="*res://scripts/network_manager.gd"
+AuthClient="*res://scripts/auth_client.gd"
 
 [display]
 

@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/mp_menu.gd" id="1_menu"]
+[ext_resource type="PackedScene" path="res://auth_screen.tscn" id="2_auth"]
 
 [node name="Menu" type="CanvasLayer"]
 layer = 10
@@ -109,3 +110,15 @@ text = "LEAVE SESSION (PLAY SOLO)"
 layout_mode = 2
 focus_mode = 0
 text = "BACK TO GAME"
+
+[node name="AccountButton" type="Button" parent="Root"]
+visible = false
+layout_mode = 0
+offset_left = 16.0
+offset_top = 214.0
+offset_right = 236.0
+offset_bottom = 254.0
+focus_mode = 0
+text = "ACCOUNT: SIGN IN"
+
+[node name="Auth" parent="." instance=ExtResource("2_auth")]

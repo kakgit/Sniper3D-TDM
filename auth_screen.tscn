@@ -1,0 +1,94 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/auth_screen.gd" id="1_auth"]
+
+[node name="Auth" type="CanvasLayer"]
+layer = 20
+script = ExtResource("1_auth")
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Panel" type="Panel" parent="Root"]
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -240.0
+offset_top = -220.0
+offset_right = 240.0
+offset_bottom = 220.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Margin" type="MarginContainer" parent="Root/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_top = 22
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_bottom = 22
+
+[node name="Column" type="VBoxContainer" parent="Root/Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="Root/Panel/Margin/Column"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "ACCOUNT"
+horizontal_alignment = 1
+
+[node name="UsernameField" type="LineEdit" parent="Root/Panel/Margin/Column"]
+layout_mode = 2
+placeholder_text = "username"
+
+[node name="PasswordField" type="LineEdit" parent="Root/Panel/Margin/Column"]
+layout_mode = 2
+secret = true
+placeholder_text = "password"
+
+[node name="Hint" type="Label" parent="Root/Panel/Margin/Column"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "A new account needs a username of 3 to 20 letters, digits or underscore, and a password of at least 8 characters."
+autowrap_mode = 2
+
+[node name="RegisterButton" type="Button" parent="Root/Panel/Margin/Column"]
+layout_mode = 2
+focus_mode = 0
+text = "CREATE ACCOUNT"
+
+[node name="LoginButton" type="Button" parent="Root/Panel/Margin/Column"]
+layout_mode = 2
+focus_mode = 0
+text = "SIGN IN"
+
+[node name="SignOutButton" type="Button" parent="Root/Panel/Margin/Column"]
+visible = false
+layout_mode = 2
+focus_mode = 0
+text = "SIGN OUT"
+
+[node name="StatusLine" type="Label" parent="Root/Panel/Margin/Column"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 44)
+theme_override_font_sizes/font_size = 15
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="CloseButton" type="Button" parent="Root/Panel/Margin/Column"]
+layout_mode = 2
+focus_mode = 0
+text = "BACK TO GAME"
