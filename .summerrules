@@ -2,7 +2,7 @@
 
 - Language: GDScript (Godot 4.x). Scenes are .tscn in snake_case, scripts .gd.
 - Genre: tactical team-deathmatch sniper shooter (Delta Force: Black Hawk Down inspired).
-- Main scene: res://main.tscn. The arena geometry is generated at runtime by res://scripts/map_builder.gd.
+- Entry scene: res://home.tscn, the front page (title + DEPLOY / ACCOUNT / QUIT). It loads res://main.tscn only when DEPLOY is pressed, so no match, bots, clock or mouse capture start behind a menu. res://main.tscn is the arena, not the entry point, and its geometry is generated at runtime by res://scripts/map_builder.gd.
 - Arena layout is point-mirrored: Team A spawns at z = -50, Team B at z = +50, buildings diagonally opposite.
 - The mid barricade at z = 0 is fully solid and impassable at every height. Never add gaps, loopholes, or climbable cover to it.
 - Each team's half is reachable only by spawning in it. Do not add traversal between the two halves.
@@ -18,3 +18,4 @@
 - Input gotcha: an AI file write that reloads ProjectSettings/InputMap from project.godot drops Godot's built-in ui_* actions, which breaks the ESC cursor release and menu keyboard navigation. Re-bind ui_cancel, ui_accept, ui_select, ui_up, ui_down, ui_left, ui_right after any project.godot rewrite.
 - Accounts backend: the hosted accounts API lives at https://sniper3d-tdm-production.up.railway.app, deployed from this repo (root directory server/) with Railway Postgres. The game side is the AuthClient autoload in res://scripts/auth_client.gd, whose API_BASE constant points at that domain and whose session is persisted to user://auth.cfg. Server code and its runbook are in res://server/.
 - Android gotcha: export_presets.cfg must keep permissions/internet=true, or the exported APK has no INTERNET permission and every account HTTP call fails only on the phone while desktop keeps working.
+- Front page: the app opens on res://home.tscn (script res://scripts/home_menu.gd), never straight into the arena. Account access must be reachable from the front page as well as from the in-game MULTIPLAYER menu, and both places instance the same res://auth_screen.tscn. Check this entry point before assuming what the app does on launch.
