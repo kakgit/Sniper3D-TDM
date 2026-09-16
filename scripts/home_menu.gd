@@ -10,6 +10,8 @@ extends Control
 ## in-game menu uses, instanced here under the name "Auth".
 
 const GAME_SCENE := "res://main.tscn"
+## The Control Settings page. Reachable once signed in, per the design.
+const CONTROLS_SCENE := "res://control_settings.tscn"
 
 var _auth: Node
 var _auth_screen: Node
@@ -17,6 +19,7 @@ var _status: Label
 var _deploy_button: Button
 var _account_button: Button
 var _quit_button: Button
+var _controls_button: Button
 var _back_at := 0.0               ## when the Android back button last fired
 
 
@@ -27,12 +30,15 @@ func _ready() -> void:
 	_deploy_button = find_child("DeployButton", true, false) as Button
 	_account_button = find_child("AccountButton", true, false) as Button
 	_quit_button = find_child("QuitButton", true, false) as Button
+	_controls_button = find_child("ControlsButton", true, false) as Button
 	if _deploy_button:
 		_deploy_button.pressed.connect(_on_deploy_pressed)
 	if _account_button:
 		_account_button.pressed.connect(_on_account_pressed)
 	if _quit_button:
 		_quit_button.pressed.connect(_on_quit_pressed)
+	if _controls_button:
+		_controls_button.pressed.connect(_on_controls_pressed)
 	_auth_screen = find_child("Auth", true, false)
 	if _auth_screen != null and _auth_screen.has_signal("closed"):
 		_auth_screen.closed.connect(_refresh)
@@ -82,6 +88,12 @@ func _on_account_pressed() -> void:
 	_refresh()
 
 
+## Opens the Control Settings page: the drag-and-drop control editor and the
+## tap gesture dropdowns.
+func _on_controls_pressed() -> void:
+	get_tree().change_scene_to_file(CONTROLS_SCENE)
+
+
 func _on_quit_pressed() -> void:
 	get_tree().quit()
 
@@ -99,6 +111,10 @@ func _refresh() -> void:
 			_account_button.text = "ACCOUNT: %s" % String(_auth.username())
 		else:
 			_account_button.text = "ACCOUNT"
+	# The Control Settings page belongs to a signed-in player, so its button only
+	# appears once there is an account to attach the settings to.
+	if _controls_button:
+		_controls_button.visible = signed
 	if _status == null:
 		return
 	if signed:

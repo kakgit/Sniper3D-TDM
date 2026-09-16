@@ -24,11 +24,21 @@ const STICK_TRAVEL := 54.0       ## how far the knob slides inside its pad
 const KNOB_REST := Vector2(62.0, 62.0)
 const TAP_HOLD := 0.12           ## one-shot actions stay held at least this long
 const MOUSE_ID := -2             ## pointer id used for a real mouse drag
+## Tap gestures. A press that stays short and still is a tap rather than a look
+## drag, and the four combinations of side and count fire whatever the Control
+## Settings page bound to them.
+const TAP_MAX_TIME := 0.22       ## longer than this and it was a press, not a tap
+const TAP_MAX_MOVE := 28.0       ## moved further than this and it was a look
+const DOUBLE_WINDOW := 0.28      ## a second tap inside this is a double tap
 
 const CLAIM_STICK := "@stick"    ## pointer claims, kept apart from action names
 const CLAIM_LOOK := "@look"
 const CLAIM_MENU := "@menu"
 const CLAIM_TOGGLE := "@toggle"  ## a latched button, let go by a later tap
+## Which half of the screen a tap landed on. The look area owns the right half,
+## so a tap there and a tap on the empty left are different gestures.
+const SIDE_LEFT := "left"
+const SIDE_RIGHT := "right"
 ## Which button drives which existing action.
 const BUTTON_ACTIONS := {
 	"FireButton": "shoot",
@@ -53,6 +63,8 @@ const MOVE_ACTIONS := ["move_forward", "move_back", "move_left", "move_right"]
 @export var stick_radius := 62.0     ## drag distance that means full deflection
 @export var look_scale := 1.5        ## a thumb is coarser than a mouse, so its
                                      ## drag is scaled before the shared math
+@export var edit_mode := false       ## the Control Settings drag editor: a touch
+                                     ## moves a control instead of firing it
 
 var _shield: Control
 var _pad: Control
@@ -77,6 +89,22 @@ var _stick_down := false
 var _look_index := -1
 var _look_down := false
 
+## Tap gestures, loaded from the Control Settings page. Empty action = the
+## gesture does nothing, which is how every gesture starts except the two
+## defaults in TouchConfig.
+var _gestures: Dictionary = {}
+var _press_at: Dictionary = {}        ## pointer -> when it landed
+var _press_side: Dictionary = {}      ## pointer -> WHICH HALF it landed on
+var _press_moved: Dictionary = {}     ## pointer -> how far it has travelled
+var _last_tap_at: Dictionary = {}     ## side -> time of that side's last tap
+var _pending_tap: Dictionary = {}     ## side -> [action, seconds left to wait]
+
+## The drag editor. _defaults holds the scene's authored anchors and offsets so
+## RESET TO DEFAULTS can put them back without reloading anything.
+var _defaults: Dictionary = {}
+var _drag_control: Control = null
+var _drag_index := -1
+
 func _ready() -> void:
 	_shield = get_node_or_null("Shield") as Control
 	_pad = get_node_or_null("Shield/MovePad") as Control
@@ -84,6 +112,13 @@ func _ready() -> void:
 	_look_area = get_node_or_null("Shield/LookArea") as Control
 	_menu_button = get_node_or_null("Shield/MenuButton") as Control
 	_collect_buttons()
+	# The authored layout is kept before anything overwrites it, so RESET TO
+	# DEFAULTS can restore it without reloading the scene.
+	_capture_defaults()
+	_gestures = TouchConfig.load_gestures()
+	# A saved layout wins over the authored one, in the game and in the editor,
+	# so the settings page opens showing the coordinates actually in use.
+	apply_layout(TouchConfig.load_layout())
 	_set_stick_offset(Vector2.ZERO)
 	_refresh_visible()
 
@@ -92,6 +127,7 @@ func _process(delta: float) -> void:
 	if not visible:
 		return
 	_tick_taps(delta)
+	_tick_gestures(delta)
 	_release_orphans()
 
 func _exit_tree() -> void:
@@ -226,9 +262,35 @@ func _to_shield_dir(v: Vector2) -> Vector2:
 	return _shield.get_global_transform_with_canvas().basis_xform(v)
 
 func _handle_press(pressed: bool, index: int, position: Vector2) -> bool:
+	var p := _to_shield(position)
 	if pressed:
-		return _claim(_to_shield(position), index)
-	return _release_claim(index)
+		if edit_mode:
+			return _edit_claim(p, index)
+		_press_at[index] = Time.get_ticks_msec() / 1000.0
+		_press_moved[index] = 0.0
+		# Which half the finger landed on decides which tap gesture it is.
+		_press_side[index] = SIDE_LEFT if p.x < _shield.size.x * 0.5 else SIDE_RIGHT
+		if _claim(p, index):
+			# A finger on the look area is a look first and a tap second, so it
+			# is tracked too and only counts as a tap if it barely moved.
+			if String(_pointer_claim.get(index, "")) != CLAIM_LOOK:
+				_press_at.erase(index)
+				_press_moved.erase(index)
+			return true
+		return true
+	if edit_mode:
+		return _edit_release(index)
+	if _pointer_claim.has(index):
+		var claim := String(_pointer_claim[index])
+		if claim == CLAIM_LOOK:
+			_finish_tap(index, true)
+		_press_at.erase(index)
+		_press_moved.erase(index)
+		return _release_claim(index)
+	_finish_tap(index, false)
+	_press_at.erase(index)
+	_press_moved.erase(index)
+	return false
 
 
 ## Works out what a newly landed finger got hold of: the stick, one of the
@@ -286,6 +348,12 @@ func _release_claim(index: int) -> bool:
 	return true
 
 func _handle_drag(index: int, relative: Vector2) -> bool:
+	if edit_mode:
+		return _edit_drag(index, relative)
+	# how far this finger has travelled since it landed, which is what separates
+	# a tap gesture from a look drag
+	if _press_moved.has(index):
+		_press_moved[index] = float(_press_moved[index]) + relative.length()
 	if _stick_down and index == _stick_index:
 		# a drag carries only its delta, so the thumb is tracked by adding each
 		# delta to where it was last seen
@@ -452,3 +520,201 @@ func _reset_input() -> void:
 	_held.clear()
 	_tap_left.clear()
 	_latched.clear()
+	_press_at.clear()
+	_press_side.clear()
+	_press_moved.clear()
+	_pending_tap.clear()
+	_drag_control = null
+	_drag_index = -1
+
+
+# --- tap gestures -------------------------------------------------------------
+#
+# A tap is a press that barely moved and did not last. Which half of the screen
+# it landed on names the gesture: left_tap, right_tap, and the same two again
+# when a second tap follows inside DOUBLE_GAP. All four are chosen in the Control
+# Settings page; nothing here is hardcoded to one action.
+
+## How long a second tap may take to arrive and still count as a double.
+const DOUBLE_GAP := 0.28
+
+## Fires a gesture's chosen action. A toggle action latches the way its own button
+## does, so a double-tap AIM leaves the scope up. Anything else is a short pulse
+## driven through the same press/release pair the buttons use, which keeps
+## player_controller.gd and sniper_rifle.gd reading ordinary InputMap actions.
+func _fire(action: String) -> void:
+	if action == "" or not InputMap.has_action(action):
+		return
+	if TOGGLE_ACTIONS.has(action):
+		_toggle(action)
+		return
+	if _held.has(action):
+		return  ## a finger already holds it; a pulse must not release that
+	_press(action)
+	_tap_left[action] = TAP_HOLD
+
+
+## The config key for a tap: which half, and whether it was the second one.
+func _gesture_key(side: String, double: bool) -> String:
+	var suffix := "_double_tap" if double else "_tap"
+	return side + suffix
+
+
+## Called when a finger lifts that was never claimed by the stick or a button.
+## A second tap on the same half inside the window is the double; the single is
+## then held back for that window so it is never fired on the way to a double.
+func _finish_tap(index: int, fire: bool) -> void:
+	if not fire:
+		return
+	var side := String(_press_side.get(index, ""))
+	if side == "":
+		return
+	var at := float(_press_at.get(index, -999.0))
+	var moved := float(_press_moved.get(index, 0.0))
+	var now := float(Time.get_ticks_msec()) / 1000.0
+	if now - at > TAP_MAX_TIME or moved > TAP_MAX_MOVE:
+		return
+	if _pending_tap.has(side):
+		var pending: Array = _pending_tap[side]
+		_pending_tap.erase(side)
+		_fire(String(_gestures.get(_gesture_key(side, true), "")))
+		return
+	_pending_tap[side] = [String(_gestures.get(_gesture_key(side, false), "")), DOUBLE_GAP]
+
+
+## Counts down the held-back single taps. A double arriving first erases the
+## entry, so only a real single ever fires here.
+func _tick_gestures(delta: float) -> void:
+	if _pending_tap.is_empty():
+		return
+	for side in _pending_tap.keys():
+		var pending: Array = _pending_tap[side]
+		var left := float(pending[1]) - delta
+		if left > 0.0:
+			pending[1] = left
+			continue
+		_pending_tap.erase(side)
+		_fire(String(pending[0]))
+
+
+# --- drag editor --------------------------------------------------------------
+#
+# With edit_mode on, a touch moves a control instead of using it: nothing is
+# pressed, so dragging FIRE across the screen can never fire the rifle. The same
+# rectangles the game hit tests are the ones dragged, so what the player sees in
+# the settings page is exactly what they get in a match.
+
+## Every control the player may move, as [name, Control] pairs. LookArea is not
+## here on purpose: it is the region that turns a drag into a look, not a button.
+func _editable_controls() -> Array:
+	var out: Array = []
+	for entry in TouchConfig.DRAGGABLE:
+		var want := String(entry)
+		var ctrl: Control = null
+		if want == "MovePad":
+			ctrl = _pad
+		else:
+			ctrl = _button_named(want)
+		if ctrl != null:
+			out.append([want, ctrl])
+	return out
+
+
+func _button_named(want: String) -> Control:
+	for c in _buttons:
+		var b := c as Control
+		if b != null and String(b.name) == want:
+			return b
+	return null
+
+
+## The authored layout, kept before a saved one is applied, so RESET TO DEFAULTS
+## can put everything back without reloading the scene.
+func _capture_defaults() -> void:
+	if _shield == null:
+		return
+	for entry in _editable_controls():
+		_defaults[String(entry[0])] = (entry[1] as Control).position
+
+
+func _edit_claim(p: Vector2, index: int) -> bool:
+	var ctrl := _edit_hit(p)
+	if ctrl == null:
+		return false
+	_drag_control = ctrl
+	_drag_index = index
+	return true
+
+
+func _edit_release(index: int) -> bool:
+	if _drag_control == null or index != _drag_index:
+		return false
+	_drag_control = null
+	_drag_index = -1
+	return true
+
+
+func _edit_drag(index: int, relative: Vector2) -> bool:
+	if _drag_control == null or index != _drag_index:
+		return false
+	_edit_move_to(_drag_control, _drag_control.get_rect().get_center() + _to_shield_dir(relative))
+	return true
+
+
+func _edit_hit(p: Vector2) -> Control:
+	for entry in _editable_controls():
+		var ctrl := entry[1] as Control
+		if ctrl != null and ctrl.get_rect().has_point(p):
+			return ctrl
+	return null
+
+
+## Centres a control on p and keeps all of it on screen, so nothing can be
+## dragged off an edge and become impossible to reach again.
+func _edit_move_to(ctrl: Control, p: Vector2) -> void:
+	if ctrl == null or _shield == null:
+		return
+	var half := ctrl.size * 0.5
+	var margin := 8.0
+	var max_x := maxf(half.x + margin, _shield.size.x - half.x - margin)
+	var max_y := maxf(half.y + margin, _shield.size.y - half.y - margin)
+	var centre := Vector2(
+		clampf(p.x, half.x + margin, max_x),
+		clampf(p.y, half.y + margin, max_y)
+	)
+	ctrl.position = centre - half
+
+
+## Centre of every draggable control as a fraction of the screen. Fractions, not
+## pixels: the project stretches with canvas_items/expand, so the number of
+## canvas units across the screen changes with the phone's aspect ratio and a
+## pixel position would not keep its distance from the edge on another handset.
+func get_layout_fractions() -> Dictionary:
+	var out := {}
+	if _shield == null or _shield.size.x <= 0.0 or _shield.size.y <= 0.0:
+		return out
+	for entry in _editable_controls():
+		var ctrl := entry[1] as Control
+		if ctrl.size.x <= 0.0 or ctrl.size.y <= 0.0:
+			continue
+		out[String(entry[0])] = (ctrl.position + ctrl.size * 0.5) / _shield.size
+	return out
+
+
+func apply_layout(fractions: Dictionary) -> void:
+	if _shield == null or fractions.is_empty():
+		return
+	var size := _shield.size
+	for entry in _editable_controls():
+		var v: Variant = fractions.get(String(entry[0]), null)
+		if v is Vector2:
+			_edit_move_to(entry[1] as Control, (v as Vector2) * size)
+
+
+func reset_layout() -> void:
+	if _shield == null:
+		return
+	for entry in _editable_controls():
+		var name := String(entry[0])
+		if _defaults.has(name):
+			(entry[1] as Control).position = Vector2(_defaults[name])

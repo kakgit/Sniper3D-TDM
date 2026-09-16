@@ -1,0 +1,243 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/control_settings.gd" id="1_cs"]
+[ext_resource type="PackedScene" path="res://touch_controls.tscn" id="2_touch"]
+
+[node name="ControlSettings" type="CanvasLayer"]
+layer = 30
+script = ExtResource("1_cs")
+
+[node name="MenuRoot" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Backdrop" type="ColorRect" parent="MenuRoot"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.05, 0.06, 0.05, 1)
+
+[node name="Panel" type="Panel" parent="MenuRoot"]
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -330.0
+offset_right = 300.0
+offset_bottom = 330.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Margin" type="MarginContainer" parent="MenuRoot/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 26
+theme_override_constants/margin_top = 22
+theme_override_constants/margin_right = 26
+theme_override_constants/margin_bottom = 22
+
+[node name="Column" type="VBoxContainer" parent="MenuRoot/Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="MenuRoot/Panel/Margin/Column"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+text = "CONTROL SETTINGS"
+horizontal_alignment = 1
+
+[node name="DragDropButton" type="Button" parent="MenuRoot/Panel/Margin/Column"]
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+focus_mode = 0
+text = "DRAG & DROP CONTROL"
+
+[node name="DragDropHint" type="Label" parent="MenuRoot/Panel/Margin/Column"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "Move the on-screen stick and buttons to wherever your thumbs want them."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="GestureTitle" type="Label" parent="MenuRoot/Panel/Margin/Column"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "TAP GESTURES"
+horizontal_alignment = 1
+
+[node name="LeftTapRow" type="HBoxContainer" parent="MenuRoot/Panel/Margin/Column"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="LeftTapLabel" type="Label" parent="MenuRoot/Panel/Margin/Column/LeftTapRow"]
+custom_minimum_size = Vector2(230, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "LEFT TAP"
+vertical_alignment = 1
+
+[node name="TapLeftDrop" type="OptionButton" parent="MenuRoot/Panel/Margin/Column/LeftTapRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 0
+
+[node name="RightTapRow" type="HBoxContainer" parent="MenuRoot/Panel/Margin/Column"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="RightTapLabel" type="Label" parent="MenuRoot/Panel/Margin/Column/RightTapRow"]
+custom_minimum_size = Vector2(230, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "RIGHT TAP"
+vertical_alignment = 1
+
+[node name="TapRightDrop" type="OptionButton" parent="MenuRoot/Panel/Margin/Column/RightTapRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 0
+
+[node name="LeftDoubleRow" type="HBoxContainer" parent="MenuRoot/Panel/Margin/Column"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="LeftDoubleLabel" type="Label" parent="MenuRoot/Panel/Margin/Column/LeftDoubleRow"]
+custom_minimum_size = Vector2(230, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "LEFT DOUBLE TAP"
+vertical_alignment = 1
+
+[node name="TapLeftDoubleDrop" type="OptionButton" parent="MenuRoot/Panel/Margin/Column/LeftDoubleRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 0
+
+[node name="RightDoubleRow" type="HBoxContainer" parent="MenuRoot/Panel/Margin/Column"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="RightDoubleLabel" type="Label" parent="MenuRoot/Panel/Margin/Column/RightDoubleRow"]
+custom_minimum_size = Vector2(230, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "RIGHT DOUBLE TAP"
+vertical_alignment = 1
+
+[node name="TapRightDoubleDrop" type="OptionButton" parent="MenuRoot/Panel/Margin/Column/RightDoubleRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 0
+
+[node name="TapHint" type="Label" parent="MenuRoot/Panel/Margin/Column"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "A tap is a quick touch on the left or the right half of the screen that does not drag. Two quick taps in a row is the double."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="SaveButton" type="Button" parent="MenuRoot/Panel/Margin/Column"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+focus_mode = 0
+text = "SAVE"
+
+[node name="ResetButton" type="Button" parent="MenuRoot/Panel/Margin/Column"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+focus_mode = 0
+text = "RESET TO DEFAULTS"
+
+[node name="BackButton" type="Button" parent="MenuRoot/Panel/Margin/Column"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+focus_mode = 0
+text = "BACK TO HOME"
+
+[node name="StatusLabel" type="Label" parent="MenuRoot/Panel/Margin/Column"]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Drag and drop the controls, or pick what each tap fires."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="EditorRoot" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Editor" parent="EditorRoot" instance=ExtResource("2_touch")]
+edit_mode = true
+force_visible = true
+
+[node name="EditorHint" type="Label" parent="EditorRoot"]
+layout_mode = 0
+anchor_right = 1.0
+offset_left = 16.0
+offset_top = 12.0
+offset_right = -16.0
+offset_bottom = 56.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 16
+text = "DRAG ANY CONTROL TO MOVE IT - THEN SAVE"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="EditorSaveButton" type="Button" parent="EditorRoot"]
+layout_mode = 0
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = -76.0
+offset_right = 176.0
+offset_bottom = -20.0
+grow_vertical = 0
+focus_mode = 0
+text = "SAVE"
+
+[node name="EditorResetButton" type="Button" parent="EditorRoot"]
+layout_mode = 0
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 192.0
+offset_top = -76.0
+offset_right = 412.0
+offset_bottom = -20.0
+grow_vertical = 0
+focus_mode = 0
+text = "RESET TO DEFAULTS"
+
+[node name="EditorBackButton" type="Button" parent="EditorRoot"]
+layout_mode = 0
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -176.0
+offset_top = -76.0
+offset_right = -16.0
+offset_bottom = -20.0
+grow_horizontal = 0
+grow_vertical = 0
+focus_mode = 0
+text = "BACK"

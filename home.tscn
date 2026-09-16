@@ -1,9 +1,9 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene format=3 uid="uid://c0r0me10gbmwv"]
 
-[ext_resource type="Script" path="res://scripts/home_menu.gd" id="1_home"]
+[ext_resource type="Script" uid="uid://cnafa4ip1jhni" path="res://scripts/home_menu.gd" id="1_home"]
 [ext_resource type="PackedScene" path="res://auth_screen.tscn" id="2_auth"]
 
-[node name="Home" type="Control"]
+[node name="Home" type="Control" unique_id=1345990044]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -12,7 +12,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_home")
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="Background" type="ColorRect" parent="." unique_id=1786266603]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -21,7 +21,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.05, 0.06, 0.05, 1)
 
-[node name="Center" type="CenterContainer" parent="."]
+[node name="Center" type="CenterContainer" parent="." unique_id=1606353363]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -29,47 +29,54 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Column" type="VBoxContainer" parent="Center"]
+[node name="Column" type="VBoxContainer" parent="Center" unique_id=1842542378]
 custom_minimum_size = Vector2(460, 0)
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="Title" type="Label" parent="Center/Column"]
+[node name="Title" type="Label" parent="Center/Column" unique_id=623887263]
 layout_mode = 2
 theme_override_font_sizes/font_size = 42
 text = "TDM SNIPER ARENA"
 horizontal_alignment = 1
 
-[node name="Tagline" type="Label" parent="Center/Column"]
+[node name="Tagline" type="Label" parent="Center/Column" unique_id=1940101933]
 layout_mode = 2
 theme_override_font_sizes/font_size = 15
 text = "TACTICAL TEAM DEATHMATCH - TWO TEAMS, ONE HOUR, ONE RIFLE"
 horizontal_alignment = 1
 autowrap_mode = 2
 
-[node name="Spacer" type="Control" parent="Center/Column"]
+[node name="Spacer" type="Control" parent="Center/Column" unique_id=1988378431]
 custom_minimum_size = Vector2(0, 18)
 layout_mode = 2
 
-[node name="DeployButton" type="Button" parent="Center/Column"]
+[node name="DeployButton" type="Button" parent="Center/Column" unique_id=1429358885]
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
 focus_mode = 0
 text = "DEPLOY"
 
-[node name="AccountButton" type="Button" parent="Center/Column"]
+[node name="AccountButton" type="Button" parent="Center/Column" unique_id=713393531]
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
 focus_mode = 0
 text = "ACCOUNT"
 
-[node name="QuitButton" type="Button" parent="Center/Column"]
+[node name="ControlsButton" type="Button" parent="Center/Column" unique_id=1151525648]
+visible = false
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+focus_mode = 0
+text = "CONTROL SETTINGS"
+
+[node name="QuitButton" type="Button" parent="Center/Column" unique_id=1229824802]
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
 focus_mode = 0
 text = "QUIT"
 
-[node name="StatusLabel" type="Label" parent="Center/Column"]
+[node name="StatusLabel" type="Label" parent="Center/Column" unique_id=260697415]
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
@@ -77,4 +84,4 @@ text = "Playing as a guest"
 horizontal_alignment = 1
 autowrap_mode = 2
 
-[node name="Auth" parent="." instance=ExtResource("2_auth")]
+[node name="Auth" parent="." unique_id=59918640 instance=ExtResource("2_auth")]
