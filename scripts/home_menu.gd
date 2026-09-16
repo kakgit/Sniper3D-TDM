@@ -17,6 +17,7 @@ var _status: Label
 var _deploy_button: Button
 var _account_button: Button
 var _quit_button: Button
+var _back_at := 0.0               ## when the Android back button last fired
 
 
 func _ready() -> void:
@@ -50,6 +51,25 @@ func _ready() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+
+
+## The Android back button. quit_on_go_back is off, which stops Godot killing the
+## app on that press, so the front page keeps the normal phone behaviour itself:
+## back here means leave. Godot can deliver this notification more than once for
+## a single press, so a repeat inside the debounce window is ignored - without it
+## one press would close the panel and then quit the app anyway.
+func _notification(what: int) -> void:
+	if what != NOTIFICATION_WM_GO_BACK_REQUEST:
+		return
+	var now := float(Time.get_ticks_msec()) / 1000.0
+	if now - _back_at < 0.35:
+		return
+	_back_at = now
+	if _auth_screen != null and _auth_screen.visible:
+		if _auth_screen.has_method("close"):
+			_auth_screen.close()
+		return
+	get_tree().quit()
 
 
 func _on_deploy_pressed() -> void:

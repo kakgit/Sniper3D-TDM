@@ -1,13 +1,13 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene format=3 uid="uid://o13wkeqmfj7n"]
 
-[ext_resource type="Script" path="res://scripts/mp_menu.gd" id="1_menu"]
+[ext_resource type="Script" uid="uid://b0bxgly5t5xeg" path="res://scripts/mp_menu.gd" id="1_menu"]
 [ext_resource type="PackedScene" path="res://auth_screen.tscn" id="2_auth"]
 
-[node name="Menu" type="CanvasLayer"]
+[node name="Menu" type="CanvasLayer" unique_id=1909448583]
 layer = 10
 script = ExtResource("1_menu")
 
-[node name="Root" type="Control" parent="."]
+[node name="Root" type="Control" parent="." unique_id=1721432183]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -16,7 +16,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="MenuButton" type="Button" parent="Root"]
+[node name="MenuButton" type="Button" parent="Root" unique_id=96177734]
 visible = false
 layout_mode = 0
 offset_left = 16.0
@@ -25,7 +25,7 @@ offset_right = 156.0
 offset_bottom = 206.0
 text = "MULTIPLAYER"
 
-[node name="NetStatus" type="Label" parent="Root"]
+[node name="NetStatus" type="Label" parent="Root" unique_id=2139685400]
 visible = false
 layout_mode = 0
 offset_left = 164.0
@@ -35,7 +35,7 @@ offset_bottom = 198.0
 theme_override_font_sizes/font_size = 15
 text = "OFFLINE - playing solo"
 
-[node name="MenuPanel" type="Panel" parent="Root"]
+[node name="MenuPanel" type="Panel" parent="Root" unique_id=944838586]
 visible = false
 layout_mode = 0
 anchor_left = 0.5
@@ -49,7 +49,7 @@ offset_bottom = 220.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Margin" type="MarginContainer" parent="Root/MenuPanel"]
+[node name="Margin" type="MarginContainer" parent="Root/MenuPanel" unique_id=166119928]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -61,57 +61,57 @@ theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 24
 theme_override_constants/margin_bottom = 20
 
-[node name="Column" type="VBoxContainer" parent="Root/MenuPanel/Margin"]
+[node name="Column" type="VBoxContainer" parent="Root/MenuPanel/Margin" unique_id=539582470]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="Title" type="Label" parent="Root/MenuPanel/Margin/Column"]
+[node name="Title" type="Label" parent="Root/MenuPanel/Margin/Column" unique_id=1567311826]
 layout_mode = 2
 theme_override_font_sizes/font_size = 26
 text = "LAN MULTIPLAYER"
 horizontal_alignment = 1
 
-[node name="StatusLine" type="Label" parent="Root/MenuPanel/Margin/Column"]
-layout_mode = 2
+[node name="StatusLine" type="Label" parent="Root/MenuPanel/Margin/Column" unique_id=1737607869]
 custom_minimum_size = Vector2(0, 46)
+layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "OFFLINE - playing solo"
 horizontal_alignment = 1
 autowrap_mode = 2
 
-[node name="Hint" type="Label" parent="Root/MenuPanel/Margin/Column"]
+[node name="Hint" type="Label" parent="Root/MenuPanel/Margin/Column" unique_id=1839904475]
 layout_mode = 2
 theme_override_font_sizes/font_size = 13
 text = "Port 8910. On one machine: press HOST GAME here, then JOIN from a second copy of the game. On a LAN, host on one machine and type its address on the other."
 autowrap_mode = 2
 
-[node name="AddressField" type="LineEdit" parent="Root/MenuPanel/Margin/Column"]
+[node name="AddressField" type="LineEdit" parent="Root/MenuPanel/Margin/Column" unique_id=1158715026]
 layout_mode = 2
 text = "127.0.0.1"
 placeholder_text = "host address"
 
-[node name="HostButton" type="Button" parent="Root/MenuPanel/Margin/Column"]
+[node name="HostButton" type="Button" parent="Root/MenuPanel/Margin/Column" unique_id=1492235901]
 layout_mode = 2
 focus_mode = 0
 text = "HOST GAME"
 
-[node name="JoinButton" type="Button" parent="Root/MenuPanel/Margin/Column"]
+[node name="JoinButton" type="Button" parent="Root/MenuPanel/Margin/Column" unique_id=954817394]
 layout_mode = 2
 focus_mode = 0
 text = "JOIN BY IP"
 
-[node name="LeaveButton" type="Button" parent="Root/MenuPanel/Margin/Column"]
+[node name="LeaveButton" type="Button" parent="Root/MenuPanel/Margin/Column" unique_id=937556348]
 visible = false
 layout_mode = 2
 focus_mode = 0
 text = "LEAVE SESSION (PLAY SOLO)"
 
-[node name="CloseButton" type="Button" parent="Root/MenuPanel/Margin/Column"]
+[node name="CloseButton" type="Button" parent="Root/MenuPanel/Margin/Column" unique_id=862617148]
 layout_mode = 2
 focus_mode = 0
 text = "BACK TO GAME"
 
-[node name="AccountButton" type="Button" parent="Root"]
+[node name="AccountButton" type="Button" parent="Root" unique_id=420130983]
 visible = false
 layout_mode = 0
 offset_left = 16.0
@@ -121,4 +121,16 @@ offset_bottom = 254.0
 focus_mode = 0
 text = "ACCOUNT: SIGN IN"
 
-[node name="Auth" parent="." instance=ExtResource("2_auth")]
+[node name="QuitButton" type="Button" parent="Root" unique_id=2086573407]
+visible = false
+layout_mode = 0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -196.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = 56.0
+focus_mode = 0
+text = "QUIT"
+
+[node name="Auth" parent="." unique_id=1689113012 instance=ExtResource("2_auth")]
